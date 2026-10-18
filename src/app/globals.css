@@ -1,0 +1,288 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #020507;
+  --color-abyss: #050b0f;
+  --color-shell: #0a141a;
+  --color-ink: #e4f3f0;
+  --color-mist: #8aa6a2;
+  --color-dim: #4f6b67;
+  --color-pulse: #2ee6c9;
+  --color-pulse-deep: #0f9e8c;
+  --color-signal: #3aa8ff;
+  --color-vital: #6fd36a;
+  --color-alarm: #ff4d6d;
+  --color-line: rgb(46 230 201 / 0.14);
+
+  --font-display: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Space Grotesk lacks many Nigerian-language letters; switch the whole UI to Noto Sans for them
+   (mixing fonts per glyph would misplace Yoruba tone marks). */
+html:is([lang="ha"], [lang="yo"], [lang="ig"], [lang="efi"]) {
+  --font-grotesk: var(--font-noto);
+}
+
+html,
+body {
+  background: var(--color-void);
+  color: var(--color-ink);
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgb(46 230 201 / 0.3);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-pulse);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+/* Glass panel used across the app */
+.glass {
+  background: linear-gradient(160deg, rgb(14 28 34 / 0.78), rgb(5 11 15 / 0.82));
+  border: 1px solid var(--color-line);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.4),
+    0 30px 80px -30px rgb(0 0 0 / 0.9),
+    inset 0 1px 0 rgb(255 255 255 / 0.04);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+
+/* Corner brackets — the "targeting reticle" motif */
+.reticle {
+  position: relative;
+}
+.reticle::before,
+.reticle::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--color-pulse);
+  opacity: 0.7;
+  pointer-events: none;
+}
+.reticle::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+  border-top-left-radius: 10px;
+}
+.reticle::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+  border-bottom-right-radius: 10px;
+}
+
+.text-glow {
+  text-shadow: 0 0 24px rgb(46 230 201 / 0.45);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(46 230 201 / 0.25) transparent;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Primary call-to-action with sweeping light */
+.btn-pulse {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(110deg, #19c7ad, #2ee6c9 45%, #3aa8ff);
+  color: #021412;
+  box-shadow:
+    0 0 0 1px rgb(46 230 201 / 0.5),
+    0 12px 40px -8px rgb(46 230 201 / 0.55);
+}
+.btn-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.55) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: sweep 3.6s ease-in-out infinite;
+}
+@keyframes sweep {
+  0%,
+  55% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes radar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ping-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+@keyframes blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+.animate-spin-slow {
+  animation: spin-slow 40s linear infinite;
+}
+.animate-spin-rev {
+  animation: spin-slow 28s linear infinite reverse;
+}
+.animate-radar {
+  animation: radar 4s linear infinite;
+}
+.animate-blink {
+  animation: blink 1.4s steps(2) infinite;
+}
+
+/* ---- Map markers ----
+   MapLibre owns the marker element's inline transform/opacity, so state styling targets children. */
+.dc-marker {
+  --c: var(--color-pulse);
+  position: relative;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.dc-marker .core {
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px 9999px 9999px 2px;
+  transform: rotate(-45deg);
+  transform-origin: 50% 50%;
+  background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--c) 70%, white), var(--c) 55%, color-mix(in srgb, var(--c) 40%, black));
+  box-shadow:
+    0 0 0 2px rgb(2 5 7 / 0.9),
+    0 0 18px var(--c);
+  display: grid;
+  place-items: center;
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.3),
+    opacity 0.3s;
+}
+.dc-marker .core span {
+  transform: rotate(45deg);
+  font: 700 11px/1 var(--font-mono);
+  color: #021412;
+}
+.dc-marker .ring {
+  position: absolute;
+  inset: 4px;
+  border-radius: 9999px;
+  border: 1px solid var(--c);
+  animation: ping-ring 2.6s ease-out infinite;
+  pointer-events: none;
+}
+.dc-marker:hover .core {
+  transform: translateY(-3px) rotate(-45deg) scale(1.15);
+}
+.dc-marker.is-selected {
+  z-index: 5;
+}
+.dc-marker.is-selected .core {
+  transform: translateY(-8px) rotate(-45deg) scale(1.5);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 30px 6px var(--c);
+}
+.dc-marker.is-selected .ring {
+  border-width: 2px;
+}
+.dc-marker.is-dimmed .core {
+  opacity: 0.3;
+}
+.dc-marker.is-dimmed .ring {
+  display: none;
+}
+
+.dc-user {
+  position: relative;
+  width: 22px;
+  height: 22px;
+}
+.dc-user .dot {
+  position: absolute;
+  inset: 4px;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow:
+    0 0 0 4px var(--color-signal),
+    0 0 24px 6px rgb(58 168 255 / 0.7);
+}
+.dc-user .wave {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid var(--color-signal);
+  animation: ping-ring 2s ease-out infinite;
+}
+.dc-user .wave + .wave {
+  animation-delay: 1s;
+}
+
+.maplibregl-ctrl-attrib {
+  background: rgb(2 5 7 / 0.7) !important;
+  color: var(--color-dim) !important;
+  font-size: 10px !important;
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--color-mist) !important;
+}
+.maplibregl-ctrl-group {
+  background: rgb(10 20 26 / 0.85) !important;
+  border: 1px solid var(--color-line) !important;
+}
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--color-line) !important;
+}
+.maplibregl-ctrl-icon {
+  filter: invert(0.85) sepia(1) hue-rotate(120deg) saturate(2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
